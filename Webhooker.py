@@ -51,6 +51,10 @@ def send_webhook():
 root = tk.Tk()
 root.title("Webhook Sender")
 
+# Set icon for tkinter window
+icon_path = "Assets/app.ico"
+root.iconbitmap(icon_path)
+
 # Create and position labels and entry fields
 webhook_url_label = tk.Label(root, text="Enter the Webhook URL here")
 webhook_url_label.pack()
