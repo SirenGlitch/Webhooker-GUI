@@ -1,7 +1,9 @@
-import requests
+import json
+import os
 import tkinter as tk
 from tkinter import messagebox
-import json
+
+import requests
 
 
 def toggle_input_fields():
@@ -95,8 +97,10 @@ def send_webhook():
 root = tk.Tk()
 root.title("Webhook Sender")
 
-# Set a custom icon for the window (replace "path/to/your/icon.ico" with your icon path)
-icon_path = "Assets/app.ico"
+# Get the path to the custom icon in the Assets subdirectory
+icon_path = os.path.join(os.path.dirname(__file__), "Assets", "app.ico")
+
+# Load the custom icon and set it for the tkinter window
 root.iconbitmap(icon_path)
 
 # Create and position webhook input box
