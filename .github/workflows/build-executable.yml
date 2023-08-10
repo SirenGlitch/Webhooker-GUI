@@ -1,0 +1,31 @@
+name: Build Executable
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller requests
+
+    - name: Build executable
+      run: |
+        pyinstaller --onefile --icon=Assets/app.ico --add-data "Assets;Assets" Webhooker.py
+
+    - name: Upload executable artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Latest-Build
+        path: dist/Webhooker.exe
