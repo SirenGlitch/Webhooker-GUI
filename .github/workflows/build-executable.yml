@@ -22,7 +22,7 @@ jobs:
 
     - name: Build Windows executable
       run: |
-        pyinstaller --onefile --icon=Assets/app.ico --add-data "Assets:Assets" Webhooker.py
+        pyinstaller --onefile --icon=Assets/app.ico --add-data "Assets;Assets" Webhooker.py
 
     - name: Upload Windows executable artifact
       uses: actions/upload-artifact@v2
