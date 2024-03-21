@@ -632,3 +632,6 @@ FodyWeavers.xsd
 .idea/
 output/
 pyinstaller-config.json
+*.spec
+build/
+dist/
