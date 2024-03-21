@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import tkinter as tk
 from tkinter import messagebox
 import requests
@@ -156,4 +157,4 @@ send_button.pack()
 # Start the main event loop
 root.mainloop()
 
-exit()
+sys.exit()
