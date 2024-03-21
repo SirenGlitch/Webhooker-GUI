@@ -2,7 +2,6 @@ import json
 import os
 import tkinter as tk
 from tkinter import messagebox
-
 import requests
 
 
@@ -32,6 +31,11 @@ def toggle_input_fields():
 
 def send_webhook():
     webhook_url = webhook_url_entry.get().strip()
+    if not webhook_url:
+        messagebox.showerror("Error", "Please enter a valid Webhook URL.")
+        return
+    
+    confirmation_message = None
 
     if use_json_var.get():
         json_data = json_entry.get("1.0", "end-1c").strip()
@@ -43,54 +47,58 @@ def send_webhook():
         try:
             data = json.loads(json_data)
         except json.JSONDecodeError as e:
-            messagebox.showerror("Error", f"Invalid JSON data: {e}")
+            messagebox.showerror("Error", f"Invalid JSON data: {str(e)}")
             return
 
         confirmation_message = (
-            "Is this correct?\n JSON data:\n{}\n".format(json.dumps(data, indent=4))
+            "Is this correct?\n Webhook URL:\n{}\nJSON data:\n{}\n".format(webhook_url, json.dumps(data, indent=4))
         )
-
     else:
         username = username_entry.get().strip()
         avatar_url = avatar_url_entry.get().strip()
         content = content_entry.get().strip()
+        
+        if not (username and content):
+            messagebox.showerror("Error", "Username and Content cannot be empty.")
+            return
+        
         default_avatar_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/935px-Python-logo-notext.svg.png"
 
         if not avatar_url:
             avatar_url = default_avatar_url
 
-        while True:
-            if avatar_url.endswith((".jpg", ".jpeg", ".png", ".gif")):
-                break
-            else:
-                messagebox.showwarning("Invalid URL", f"Invalid URL: {avatar_url}")
-                avatar_url = avatar_url_entry.get().strip()
+        invalid_avatar = 0 if avatar_url.endswith((".jpg", ".jpeg", ".png", ".gif")) else 1
+
+        if invalid_avatar == 1:
+            messagebox.showerror("Error", "Invalid URL for Avatar.")
+            return
 
         confirmation_message = (
-            f"Is this correct?\n username: {username}\n Profile image URL: "
-            f"{'default' if avatar_url == default_avatar_url else avatar_url}\n message: {content}\n"
+            f"Is this correct?\n Username: {username}\n Profile image URL: "
+            f"{avatar_url if avatar_url != default_avatar_url else 'default'}\n Content: {content}\n"
         )
+
         data = {
             "username": username,
             "avatar_url": avatar_url,
             "content": content,
         }
-
+ 
     confirmation = messagebox.askyesno("Confirmation", confirmation_message)
 
-    if confirmation:
-        messagebox.showinfo("Webhook", "Okay, pinging webhook...")
-        # webhook ping code
+    if not confirmation:
+        messagebox.showinfo("Cancelled", "Operation cancelled.")
+        return
+
+    try:
         response = requests.post(webhook_url, json=data)
-
+        
         if response.status_code == 204:
-            messagebox.showinfo("Webhook", "Webhook sent successfully!")
+            messagebox.showinfo("Success", "Webhook sent successfully!")
         else:
-            messagebox.showerror("Webhook", "Failed to send the webhook.")
-
-    else:
-        messagebox.showinfo("Webhook", "Okay, cancelling...")
-        exit()
+            messagebox.showerror("Error", f"Failed to send the webhook.\n{response.text}")
+    except requests.exceptions.RequestException as e:
+        messagebox.showerror("Error", f"An error occurred while sending the webhook:\n{str(e)}")
 
 
 # Create the main tkinter window
@@ -147,3 +155,5 @@ send_button.pack()
 
 # Start the main event loop
 root.mainloop()
+
+exit()
